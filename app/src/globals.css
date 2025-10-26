@@ -1,0 +1,78 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+ 
+@layer base {
+  :root {
+    --background: 48 83% 97%;
+    --foreground: 20 14.3% 4.1%;
+
+    --card: 48 83% 97%;
+    --card-foreground: 20 14.3% 4.1%;
+ 
+    --popover: 48 83% 97%;
+    --popover-foreground: 20 14.3% 4.1%;
+ 
+    --primary: 40 86% 51%;
+    --primary-foreground: 0 0% 100%;
+ 
+    --secondary: 44 14% 94%;
+    --secondary-foreground: 20 14.3% 4.1%;
+ 
+    --muted: 240 4.8% 95.9%;
+    --muted-foreground: 25 5.3% 44.7%;
+ 
+    --accent: 206 90% 60%;
+    --accent-foreground: 0 0% 100%;
+ 
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 20 5.9% 90%;
+    --input: 20 5.9% 90%;
+    --ring: 40 86% 51%;
+ 
+    --radius: 0.5rem;
+    --font-headline: 'Changa', sans-serif;
+    --font-body: 'Changa', sans-serif;
+  }
+ 
+  .dark {
+    --background: 20 14.3% 4.1%;
+    --foreground: 0 0% 98%;
+ 
+    --card: 20 14.3% 4.1%;
+    --card-foreground: 0 0% 98%;
+ 
+    --popover: 20 14.3% 4.1%;
+    --popover-foreground: 0 0% 98%;
+ 
+    --primary: 40 86% 51%;
+    --primary-foreground: 0 0% 100%;
+ 
+    --secondary: 12 6.5% 15.1%;
+    --secondary-foreground: 0 0% 98%;
+ 
+    --muted: 12 6.5% 15.1%;
+    --muted-foreground: 24 5.4% 63.9%;
+ 
+    --accent: 206 90% 60%;
+    --accent-foreground: 0 0% 100%;
+ 
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+ 
+    --border: 12 6.5% 15.1%;
+    --input: 12 6.5% 15.1%;
+    --ring: 40 86% 51%;
+  }
+}
+ 
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}

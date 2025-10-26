@@ -1,0 +1,231 @@
+
+{
+  "entities": {
+    "Product": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Product",
+      "type": "object",
+      "description": "Represents a product sold in the Marhaba Market.",
+      "properties": {
+        "id": { "type": "string", "description": "Unique identifier for the product." },
+        "title": { "type": "string", "description": "The title of the product." },
+        "slug": { "type": "string", "description": "A URL-friendly version of the product title." },
+        "sku": { "type": "string", "description": "Stock Keeping Unit." },
+        "price": { "type": "number", "description": "The price of the product." },
+        "images": { "type": "array", "items": { "type": "string" } },
+        "description": { "type": "string", "description": "A detailed description of the product." },
+        "shortDescription": { "type": "string", "description": "A brief summary of the product." },
+        "categoryId": { "type": "string", "description": "Reference to Category." },
+        "totalStock": { "type": "number", "description": "The total number of units in stock." }
+      },
+      "required": ["id", "title", "price", "categoryId"]
+    },
+    "Category": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Category",
+      "type": "object",
+      "description": "Represents a category of products.",
+      "properties": {
+        "id": { "type": "string", "description": "Unique identifier for the category." },
+        "name": { "type": "string", "description": "The name of the category." },
+        "slug": { "type": "string", "description": "A URL-friendly version of the category name." },
+        "description": { "type": "string", "description": "A description of the category." },
+        "imageUrl": { "type": "string", "description": "URL of an image representing the category." },
+        "order": { "type": "number", "description": "The display order of the category." }
+      },
+      "required": ["id", "name", "slug"]
+    },
+    "Page": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Page",
+      "type": "object",
+      "description": "Represents a content page (static or dynamic).",
+      "properties": {
+        "id": { "type": "string", "description": "Unique identifier for the page." },
+        "title": { "type": "string", "description": "The title of the page." },
+        "slug": { "type": "string", "description": "A URL-friendly version of the page title." },
+        "type": { "type": "string", "enum": ["static", "dynamic"], "description": "The type of the page." },
+        "content": { "type": "string", "description": "The content of the page (supports rich text)." },
+        "order": { "type": "number", "description": "The display order of the page." }
+      },
+      "required": ["id", "title", "slug", "type", "content"]
+    },
+    "Menu": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "title": "Menu",
+        "type": "object",
+        "description": "Represents a navigation menu item.",
+        "properties": {
+            "id": { "type": "string", "description": "Unique identifier for the menu item." },
+            "title": { "type": "string", "description": "The display text of the menu item." },
+            "type": { "type": "string", "enum": ["page", "category", "custom", "product"], "description": "The type of link." },
+            "value": { "type": "string", "description": "The target of the link (slug or URL)." },
+            "order": { "type": "number", "description": "The display order of the menu item." },
+            "location": { "type": "string", "enum": ["header", "footer-col-1", "footer-col-2"], "description": "The location where the menu item appears." },
+            "parentId": { "type": ["string", "null"], "description": "The ID of the parent menu item for creating sub-menus." },
+            "status": { "type": "string", "enum": ["active", "hidden"], "description": "The visibility status of the menu item." },
+            "is_indexed": { "type": "boolean", "description": "Whether the link should be indexed by search engines." },
+            "meta_title": { "type": "string", "description": "Optional SEO title for the link." },
+            "meta_description": { "type": "string", "description": "Optional SEO description for the link." }
+        },
+        "required": ["id", "title", "type", "value", "order", "location", "status", "is_indexed"]
+    },
+    "Order": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Order",
+      "type": "object",
+      "description": "Represents a customer order.",
+      "properties": {
+        "id": { "type": "string", "description": "Unique identifier for the order." },
+        "userId": { "type": "string", "description": "Reference to User." },
+        "total": { "type": "number", "description": "The total amount of the order." },
+        "status": { "type": "string", "description": "The current status of the order." },
+        "items": { "type": "array", "items": { "type": "string" } }
+      },
+      "required": ["id", "userId", "total", "status"]
+    },
+    "Message": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Message",
+      "type": "object",
+      "description": "Represents a message from a customer or visitor.",
+      "properties": {
+        "id": { "type": "string" },
+        "senderInfo": { 
+          "type": "object", 
+          "properties": {
+            "name": { "type": "string" },
+            "email": { "type": "string", "format": "email" }
+          }
+        },
+        "content": { "type": "string" },
+        "status": { "type": "string", "enum": ["read", "unread"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "content", "status", "createdAt"]
+    },
+    "User": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "User",
+      "type": "object",
+      "description": "Represents a user of the application.",
+      "properties": {
+        "uid": { "type": "string", "description": "Unique identifier (from Firebase Auth)." },
+        "email": { "type": "string", "format": "email" },
+        "displayName": { "type": "string" },
+        "roles": { "type": "array", "items": { "type": "string" }, "description": "User roles, determines access level." },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Timestamp of user creation." }
+      },
+      "required": ["uid", "email", "roles", "createdAt"]
+    },
+    "Setting": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Setting",
+      "type": "object",
+      "description": "Represents application-wide settings.",
+      "properties": {
+        "id": { "type": "string" }
+      },
+      "required": ["id"]
+    },
+    "Integrations": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Integrations",
+      "type": "object",
+      "description": "Represents third-party integrations like tracking pixels.",
+      "properties": {
+        "facebookPixelId": { "type": "string", "description": "Facebook Pixel ID." },
+        "googleTagId": { "type": "string", "description": "Google Tag ID (for Analytics)." },
+        "tiktokPixelId": { "type": "string", "description": "TikTok Pixel ID." }
+      }
+    },
+    "ShippingZone": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Shipping Zone",
+      "type": "object",
+      "description": "Represents a shipping zone with its own rates.",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string", "description": "Name of the shipping zone (e.g., 'Casablanca', 'Rest of Morocco')." },
+        "cities": { "type": "array", "items": { "type": "string" }, "description": "List of cities included in this zone." },
+        "rates": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": { "type": "string", "description": "Name of the rate (e.g., 'Standard Shipping')." },
+              "price": { "type": "number", "description": "Cost of shipping." },
+              "condition": { "type": "string", "description": "Condition for the rate (e.g., 'min_order_value', 'weight')." },
+              "conditionValue": { "type": "number" }
+            },
+            "required": ["name", "price"]
+          }
+        }
+      },
+      "required": ["id", "name"]
+    },
+    "LandingPage": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Landing Page",
+      "description": "Represents a custom landing page built with components.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "slug": { "type": "string" },
+        "content": { "type": "array", "items": { "type": "object" } },
+        "isPublished": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "title", "slug", "isPublished"]
+    }
+  },
+  "auth": {
+    "providers": ["password", "anonymous"]
+  },
+  "firestore": {
+    "/products/{productId}": {
+      "schema": { "$ref": "#/entities/Product" },
+      "description": "Publicly readable products, writable only by admins."
+    },
+    "/categories/{categoryId}": {
+      "schema": { "$ref": "#/entities/Category" },
+      "description": "Publicly readable categories, writable only by admins."
+    },
+    "/pages/{pageId}": {
+      "schema": { "$ref": "#/entities/Page" },
+      "description": "Publicly readable content pages, writable only by admins."
+    },
+    "/menus/{menuId}": {
+      "schema": { "$ref": "#/entities/Menu" },
+      "description": "Publicly readable menus, writable only by admins."
+    },
+    "/settings/{settingId}": {
+      "schema": { "$ref": "#/entities/Setting" },
+      "description": "Publicly readable settings (like site identity, theme), writable only by admins."
+    },
+    "/landing_pages/{pageId}": {
+      "schema": { "$ref": "#/entities/LandingPage" },
+      "description": "Publicly readable landing pages, writable only by admins."
+    },
+    "/orders/{orderId}": {
+      "schema": { "$ref": "#/entities/Order" },
+      "description": "Users can create orders. Admins have full access."
+    },
+    "/messages/{messageId}": {
+      "schema": { "$ref": "#/entities/Message" },
+      "description": "Users can create messages (contact form). Admins have full access."
+    },
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/User" },
+      "description": "User data, fully controlled by admins."
+    },
+    "/shipping-zones/{zoneId}": {
+      "schema": { "$ref": "#/entities/ShippingZone" },
+      "description": "Shipping zone data, fully controlled by admins."
+    }
+  }
+}
+
+    

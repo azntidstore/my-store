@@ -1,0 +1,192 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    /**
+     * @fileoverview Firestore Security Rules for Marhaba Market.
+     *
+     * Core Philosophy:
+     * This ruleset provides secure access to the Marhaba Market Firestore database.
+     * It enforces different levels of access based on user roles (admin vs. regular user) and data ownership.
+     * Public read access is granted to certain collections like products, categories, pages, menus, landing pages, and settings,
+     * while write access to these collections is restricted to admins only. User-specific data (orders, messages)
+     * are protected, ensuring only the user and admins can access them.
+     *
+     * Data Structure:
+     * The database is structured with top-level collections for products, categories, pages, menus, settings, landing pages, orders, messages, users and shipping zones.
+     *
+     * Key Security Decisions:
+     * - Public read access to products, categories, pages, menus, landing pages and settings for all users.
+     * - Admin-only write access to products, categories, pages, menus, landing pages, settings, shipping zones and users.
+     * - Users can create orders and messages.
+     * - No user listing is allowed.
+     */
+
+
+    /**
+     * @description Checks if the user is signed in.
+     * @return {boolean} True if the user is signed in, false otherwise.
+     */
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    /**
+     * @description Checks if the user is an admin based on their roles.
+     * @return {boolean} True if the user is an admin, false otherwise.
+     */
+    function isAdmin() {
+        return isSignedIn() && request.auth.token.admin == true;
+    }
+
+    /**
+     * @description Checks if the user is the owner of the document.
+     * @param {string} userId The user ID to check against.
+     * @return {boolean} True if the user is the owner, false otherwise.
+     */
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    /**
+     * @description Checks if the user is the owner of the existing document.
+     * @param {string} userId The user ID to check against.
+     * @return {boolean} True if the user is the owner and the document exists, false otherwise.
+     */
+    function isExistingOwner(userId) {
+        return isOwner(userId) && existsAfter(/databases/$(database)/documents/orders/$(orderId));
+    }
+
+    /**
+     * @description Rules for the /products collection.
+     * @path /products/{productId}
+     * @allow (get, list): Any user can read product data.
+     * @allow (create, update, delete): Only admins can modify product data.
+     * @deny (create, update, delete): Non-admins cannot modify product data.
+     * @principle Allows public read access, restricts write access to admins.
+     */
+    match /products/{productId} {
+      allow get, list: if true;
+      allow create, update, delete: if isAdmin();
+    }
+
+    /**
+     * @description Rules for the /categories collection.
+     * @path /categories/{categoryId}
+     * @allow (get, list): Any user can read category data.
+     * @allow (create, update, delete): Only admins can modify category data.
+     * @deny (create, update, delete): Non-admins cannot modify category data.
+     * @principle Allows public read access, restricts write access to admins.
+     */
+    match /categories/{categoryId} {
+      allow get, list: if true;
+      allow create, update, delete: if isAdmin();
+    }
+
+    /**
+     * @description Rules for the /pages collection.
+     * @path /pages/{pageId}
+     * @allow (get, list): Any user can read page data.
+     * @allow (create, update, delete): Only admins can modify page data.
+     * @deny (create, update, delete): Non-admins cannot modify page data.
+     * @principle Allows public read access, restricts write access to admins.
+     */
+    match /pages/{pageId} {
+      allow get, list: if true;
+      allow create, update, delete: if isAdmin();
+    }
+
+    /**
+     * @description Rules for the /menus collection.
+     * @path /menus/{menuId}
+     * @allow (get, list): Any user can read menu data.
+     * @allow (create, update, delete): Only admins can modify menu data.
+     * @deny (create, update, delete): Non-admins cannot modify menu data.
+     * @principle Allows public read access, restricts write access to admins.
+     */
+    match /menus/{menuId} {
+      allow get, list: if true;
+      allow create, update, delete: if isAdmin();
+    }
+
+    /**
+     * @description Rules for the /settings collection.
+     * @path /settings/{settingId}
+     * @allow (get, list): Any user can read setting data.
+     * @allow (create, update, delete): Only admins can modify setting data.
+     * @deny (create, update, delete): Non-admins cannot modify setting data.
+     * @principle Allows public read access, restricts write access to admins.
+     */
+    match /settings/{settingId} {
+      allow get, list: if true;
+      allow create, update, delete: if isAdmin();
+    }
+
+    /**
+     * @description Rules for the /landing_pages collection.
+     * @path /landing_pages/{pageId}
+     * @allow (get, list): Any user can read landing page data.
+     * @allow (create, update, delete): Only admins can modify landing page data.
+     * @deny (create, update, delete): Non-admins cannot modify landing page data.
+     * @principle Allows public read access, restricts write access to admins.
+     */
+    match /landing_pages/{pageId} {
+      allow get, list: if true;
+      allow create, update, delete: if isAdmin();
+    }
+
+    /**
+     * @description Rules for the /orders collection.
+     * @path /orders/{orderId}
+     * @allow (create): Users can create orders.
+     * @allow (get, list): if the order is for the user or the user is an admin.
+     * @allow (update, delete): if the user is an admin and the document exists.
+     * @deny (update, delete): if the user is not an admin or the document does not exists.
+     * @principle Allows users to create orders, restricts modification and deletion to admins.
+     */
+    match /orders/{orderId} {
+      allow create: if isSignedIn();
+      allow get: if isSignedIn() && request.auth.uid == resource.data.userId || isAdmin();
+      allow list: if isSignedIn() && request.auth.uid == resource.data.userId || isAdmin(); //TODO: Fix LIST for users and admin role
+      allow update, delete: if isAdmin() && existsAfter(/databases/$(database)/documents/orders/$(orderId));
+    }
+
+    /**
+     * @description Rules for the /messages collection.
+     * @path /messages/{messageId}
+     * @allow (create): Users can create messages.
+     * @allow (get, list, update, delete): Only admins can manage messages.
+     * @deny (get, list, update, delete): Non-admins cannot manage messages.
+     * @principle Allows users to create messages, restricts access and modification to admins.
+     */
+    match /messages/{messageId} {
+      allow create: if isSignedIn();
+      allow get, list, update, delete: if isAdmin();
+    }
+
+    /**
+     * @description Rules for the /users collection.
+     * @path /users/{userId}
+     * @allow (create, update, delete): Only admins can manage user data.
+     * @deny (create, update, delete): Non-admins cannot manage user data.
+     * @deny list: Listing all users is not allowed.
+     * @principle Restricts user management to admins.
+     */
+    match /users/{userId} {
+      allow get: if isAdmin();
+      allow create, update, delete: if isAdmin();
+      allow list: if false;
+    }
+
+    /**
+     * @description Rules for the /shipping-zones collection.
+     * @path /shipping-zones/{zoneId}
+     * @allow (get, list, create, update, delete): Only admins can manage shipping zones.
+     * @deny (get, list, create, update, delete): Non-admins cannot manage shipping zones.
+     * @principle Restricts shipping zone management to admins.
+     */
+    match /shipping-zones/{zoneId} {
+      allow get, list, create, update, delete: if isAdmin();
+    }
+  }
+}

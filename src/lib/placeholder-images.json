@@ -1,0 +1,42 @@
+{
+  "products": {
+    "kaftan": "https://picsum.photos/seed/kaftan/800/800",
+    "lantern": "https://picsum.photos/seed/lantern/800/800",
+    "pouf": "https://picsum.photos/seed/pouf/800/800",
+    "tagine": "https://picsum.photos/seed/tagine/800/800",
+    "slippers": "https://picsum.photos/seed/slippers/800/800",
+    "tea-set": "https://picsum.photos/seed/tea-set/800/800",
+    "rug": "https://picsum.photos/seed/rug/800/800",
+    "argan": "https://picsum.photos/seed/argan/800/800",
+    "leather-bag": "https://picsum.photos/seed/leather-bag/800/800",
+    "djellaba": "https://picsum.photos/seed/djellaba/800/800",
+    "mirror": "https://picsum.photos/seed/mirror/800/800",
+    "spices": "https://picsum.photos/seed/spices/800/800",
+    "necklace": "https://picsum.photos/seed/necklace/800/800",
+    "wood-box": "https://picsum.photos/seed/wood-box/800/800",
+    "shoes": "https://picsum.photos/seed/shoes/800/800",
+    "plates": "https://picsum.photos/seed/plates/800/800",
+    "placeholder": "https://picsum.photos/seed/placeholder/64/64"
+  },
+  "categories": {
+    "clothing": "https://picsum.photos/seed/cat-clothing/300/300",
+    "decor": "https://picsum.photos/seed/cat-decor/300/300",
+    "kitchen": "https://picsum.photos/seed/cat-kitchen/300/300",
+    "leather": "https://picsum.photos/seed/cat-leather/300/300",
+    "jewelry": "https://picsum.photos/seed/cat-jewelry/300/300",
+    "beauty": "https://picsum.photos/seed/cat-beauty/300/300"
+  },
+  "blog": {
+    "kaftan": "https://picsum.photos/seed/blog-kaftan/600/400",
+    "tagine": "https://picsum.photos/seed/blog-tagine/600/400",
+    "rug": "https://picsum.photos/seed/blog-rug/600/400",
+    "argan": "https://picsum.photos/seed/blog-argan/600/400"
+  },
+  "dashboard": {
+    "kaftan": "https://picsum.photos/seed/kaftan/100/100",
+    "rug": "https://picsum.photos/seed/rug/100/100",
+    "tea-set": "https://picsum.photos/seed/tea-set/100/100",
+    "leather-bag": "https://picsum.photos/seed/leather-bag/100/100",
+    "lantern": "https://picsum.photos/seed/lantern/100/100"
+  }
+}

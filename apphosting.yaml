@@ -1,0 +1,18 @@
+# Specifies the version of the App Hosting platform
+specVersion: v1alpha1
+
+# Specifies the settings for the backend service
+run:
+  # Specifies that the run command should be automatically discovered
+  auto: true
+# Specifies the settings for the build process
+build:
+  # Specifies that the build command should be automatically discovered
+  auto: true
+
+# Specifies the settings for server-side rendering
+# Defines the environment variables to be set for the build and run environments
+env:
+  - variable: FIREBASE_APP_URL
+    # The availability of the FIREBASE_APP_URL environment variable is provided by App Hosting
+    value: https://${LIVE_APP_ID}.web.app
