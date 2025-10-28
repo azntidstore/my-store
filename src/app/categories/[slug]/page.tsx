@@ -1,4 +1,3 @@
-
 'use client';
 import { useMemo, useEffect, useState } from 'react';
 import Header from '@/components/layout/header';
@@ -8,6 +7,11 @@ import type { Product, Category, SiteSettings, MenuItem } from '@/lib/types';
 import { Loader2, Tag } from 'lucide-react';
 import { useFirestore } from '@/firebase';
 import { collection, doc, query, where, getDocs, orderBy, onSnapshot, limit } from 'firebase/firestore';
+import { useParams } from 'next/navigation';
+
+export function generateStaticParams() {
+  return [];
+}
 
 function ProductGrid({ products, loadingProducts }: { products: Product[], loadingProducts: boolean }) {
      if (loadingProducts) {
@@ -33,8 +37,9 @@ function ProductGrid({ products, loadingProducts }: { products: Product[], loadi
 }
 
 
-export default function CategoryPage({ params }: { params: { slug: string } }) {
-    const { slug } = params;
+export default function CategoryPage() {
+    const params = useParams();
+    const slug = params.slug as string;
     const firestore = useFirestore();
     
     const [category, setCategory] = useState<Category | null>(null);
@@ -70,21 +75,29 @@ export default function CategoryPage({ params }: { params: { slug: string } }) {
             if (!firestore || !slug) return;
             setLoadingPage(true);
             
-            const categoryQuery = query(collection(firestore, 'categories'), where('slug', '==', slug), limit(1));
-            const categorySnapshot = await getDocs(categoryQuery);
+            try {
+              const categoryQuery = query(collection(firestore, 'categories'), where('slug', '==', slug), limit(1));
+              const categorySnapshot = await getDocs(categoryQuery);
 
-            if (!categorySnapshot.empty) {
-                const categoryDoc = categorySnapshot.docs[0];
-                const categoryData = { id: categoryDoc.id, ...categoryDoc.data() } as Category;
-                setCategory(categoryData);
-                
-                setLoadingProducts(true);
-                const productsQuery = query(collection(firestore, 'products'), where('categoryId', '==', categoryData.id));
-                const productsSnapshot = await getDocs(productsQuery);
-                setProducts(productsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Product)));
-                setLoadingProducts(false);
+              if (!categorySnapshot.empty) {
+                  const categoryDoc = categorySnapshot.docs[0];
+                  const categoryData = { id: categoryDoc.id, ...categoryDoc.data() } as Category;
+                  setCategory(categoryData);
+                  
+                  setLoadingProducts(true);
+                  const productsQuery = query(collection(firestore, 'products'), where('categoryId', '==', categoryData.id));
+                  const productsSnapshot = await getDocs(productsQuery);
+                  setProducts(productsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Product)));
+                  setLoadingProducts(false);
+              } else {
+                setCategory(null);
+              }
+            } catch(e) {
+                console.error("Error fetching category data: ", e);
+                setCategory(null);
+            } finally {
+                setLoadingPage(false);
             }
-            setLoadingPage(false);
         };
 
         fetchCategoryData();

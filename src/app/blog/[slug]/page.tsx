@@ -4,7 +4,6 @@ import { useEffect, useState, useMemo } from 'react';
 import Header from '@/components/layout/header';
 import Footer from '@/components/layout/footer';
 import Image from 'next/image';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Loader2 } from 'lucide-react';
 import { useFirestore, useDoc, useCollection, useMemoFirebase } from '@/firebase';
@@ -13,7 +12,7 @@ import type { SiteSettings, MenuItem } from '@/lib/types';
 import placeholderImages from '@/lib/placeholder-images.json';
 import Link from 'next/link';
 
-const allBlogPosts = [
+const allBlogPostsData = [
   {
     slug: 'secrets-of-kaftan',
     title: 'أسرار القفطان المغربي: تاريخ وأناقة',
@@ -56,25 +55,30 @@ const allBlogPosts = [
   }
 ];
 
+
+export function generateStaticParams() {
+  return [];
+}
+
 export default function BlogPostPage() {
   const params = useParams();
   const slug = params.slug as string;
-  
-  const [post, setPost] = useState<(typeof allBlogPosts)[0] | null>(null);
+  const [post, setPost] = useState<(typeof allBlogPostsData)[0] | null>(null);
   const [loading, setLoading] = useState(true);
-
+  
   const firestore = useFirestore();
   const settingsRef = useMemoFirebase(() => firestore ? doc(firestore, 'settings', 'siteIdentity') : null, [firestore]);
   const menuQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'menus'), orderBy('order')) : null, [firestore]);
-  
+
   const { data: siteSettings, isLoading: loadingSettings } = useDoc<SiteSettings>(settingsRef);
   const { data: menuItems, isLoading: loadingMenus } = useCollection<MenuItem>(menuQuery);
+  
   const headerMenuItems = useMemo(() => menuItems?.filter(item => item.location === 'header') || [], [menuItems]);
 
   useEffect(() => {
     if (slug) {
       setLoading(true);
-      const foundPost = allBlogPosts.find(p => p.slug === slug);
+      const foundPost = allBlogPostsData.find(p => p.slug === slug);
       // Simulate network delay for a better loading experience
       setTimeout(() => {
         setPost(foundPost || null);
@@ -83,9 +87,7 @@ export default function BlogPostPage() {
     }
   }, [slug]);
 
-  const isLoading = loading || loadingSettings || loadingMenus;
-
-  if (isLoading) {
+  if (loading || loadingSettings || loadingMenus) {
     return (
       <div className="flex flex-col min-h-screen">
         <Header menuItems={[]} isLoading={true} />
@@ -99,31 +101,31 @@ export default function BlogPostPage() {
 
   if (!post) {
      return (
-      <div className="flex flex-col min-h-screen">
-        <Header menuItems={headerMenuItems} isLoading={loadingMenus} />
-        <main className="flex-grow container py-12 text-center">
-          <h1 className="text-4xl font-headline mb-4">المقالة غير موجودة</h1>
-          <p className="text-destructive">عذراً، لم نتمكن من العثور على هذه المقالة.</p>
-           <Link href="/blog" className="mt-8 inline-block bg-primary text-primary-foreground px-6 py-2 rounded-md">
-              العودة إلى المدونة
-            </Link>
-        </main>
-        <Footer siteSettings={siteSettings} menuItems={menuItems} isLoading={loadingSettings || loadingMenus} />
-      </div>
+        <div className="flex flex-col min-h-screen">
+            <Header menuItems={headerMenuItems} isLoading={loadingMenus} />
+            <main className="flex-grow container py-12 text-center">
+            <h1 className="text-4xl font-headline mb-4">المقالة غير موجودة</h1>
+            <p className="text-destructive">عذراً، لم نتمكن من العثور على هذه المقالة.</p>
+            <Link href="/blog" className="mt-8 inline-block bg-primary text-primary-foreground px-6 py-2 rounded-md">
+                العودة إلى المدونة
+                </Link>
+            </main>
+            <Footer siteSettings={siteSettings} menuItems={menuItems} isLoading={loadingSettings || loadingMenus} />
+        </div>
     );
   }
 
   return (
     <div className="flex flex-col min-h-screen">
       <Header menuItems={headerMenuItems} isLoading={loadingMenus} />
-      <main className="flex-grow py-12">
-        <article className="container max-w-4xl">
+      <main className="flex-grow">
+        <article className="container max-w-4xl py-12">
             <header className="text-center mb-12">
                 <Badge variant="secondary" className="mb-4">{post.category}</Badge>
                 <h1 className="text-5xl font-headline font-bold">{post.title}</h1>
                 <p className="text-muted-foreground mt-4 text-lg">{post.date}</p>
             </header>
-             <div className="relative aspect-[16/9] rounded-lg overflow-hidden mb-12">
+                <div className="relative aspect-[16/9] rounded-lg overflow-hidden mb-12">
                 <Image 
                     src={post.imageUrl}
                     alt={post.title}

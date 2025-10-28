@@ -8,6 +8,10 @@ import { useFirestore } from '@/firebase';
 import { collection, doc, query, where, getDocs, orderBy, onSnapshot } from 'firebase/firestore';
 import { useParams } from 'next/navigation';
 
+export function generateStaticParams() {
+  return [];
+}
+
 function StaticPageContent({ page }: { page: Page }) {
     if (page.type === 'landing_page') {
       // This is potentially unsafe if content is not controlled

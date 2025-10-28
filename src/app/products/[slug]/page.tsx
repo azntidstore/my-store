@@ -1,4 +1,3 @@
-
 'use client';
 import Image from 'next/image';
 import { useParams } from 'next/navigation';
@@ -13,7 +12,7 @@ import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
 import { useCart } from '@/context/cart-context';
 import { useToast } from '@/hooks/use-toast';
-import { useFirestore, useDoc, useCollection, useMemoFirebase } from '@/firebase';
+import { useFirestore } from '@/firebase';
 import { Card, CardContent } from "@/components/ui/card"
 import {
   Carousel,
@@ -24,7 +23,11 @@ import {
   type CarouselApi,
 } from "@/components/ui/carousel"
 import Link from 'next/link';
-import { collection, doc, query, orderBy, where, getDocs, limit } from 'firebase/firestore';
+import { collection, doc, query, orderBy, where, getDocs, limit, onSnapshot } from 'firebase/firestore';
+
+export function generateStaticParams() {
+  return [];
+}
 
 export default function ProductDetailPage() {
   const params = useParams();
@@ -69,14 +72,22 @@ export default function ProductDetailPage() {
           if (!firestore || !slug) return;
           setLoadingProduct(true);
           
-          const productQuery = query(collection(firestore, "products"), where("slug", "==", slug), limit(1));
-          const querySnapshot = await getDocs(productQuery);
+          try {
+            const productQuery = query(collection(firestore, "products"), where("slug", "==", slug), limit(1));
+            const querySnapshot = await getDocs(productQuery);
 
-          if (!querySnapshot.empty) {
-              const productDoc = querySnapshot.docs[0];
-              setProduct({ id: productDoc.id, ...productDoc.data() } as Product);
+            if (!querySnapshot.empty) {
+                const productDoc = querySnapshot.docs[0];
+                setProduct({ id: productDoc.id, ...productDoc.data() } as Product);
+            } else {
+                setProduct(null);
+            }
+          } catch(e) {
+            console.error("Error fetching product:", e);
+            setProduct(null);
+          } finally {
+            setLoadingProduct(false);
           }
-          setLoadingProduct(false);
       }
       fetchProduct();
   }, [firestore, slug]);
