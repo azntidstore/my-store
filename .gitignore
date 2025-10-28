@@ -7,3 +7,4 @@ node_modules
 .firebase
 .next
 firebase-service-key.json
+node_modules
