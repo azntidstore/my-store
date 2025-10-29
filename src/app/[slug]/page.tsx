@@ -1,4 +1,3 @@
-
 'use client';
 import { useEffect, useState, useMemo } from 'react';
 import { useParams } from 'next/navigation';
@@ -35,34 +34,25 @@ export default function SlugPage() {
 
     useEffect(() => {
         if (!firestore) return;
-
         const settingsRef = doc(firestore, 'settings', 'siteIdentity');
         const menuQuery = query(collection(firestore, 'menus'), orderBy('order'));
-
         const unsubSettings = onSnapshot(settingsRef, (doc) => {
             setSiteSettings(doc.data() as SiteSettings);
             setLoadingSettings(false);
         });
-
         const unsubMenus = onSnapshot(menuQuery, (snapshot) => {
             setMenuItems(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as MenuItem)));
             setLoadingMenus(false);
         });
-
-        return () => {
-            unsubSettings();
-            unsubMenus();
-        };
+        return () => { unsubSettings(); unsubMenus(); };
     }, [firestore]);
 
     useEffect(() => {
         if (!firestore || !slug) return;
         setLoadingPage(true);
-
         const fetchPageData = async () => {
             const pageQuery = query(collection(firestore, 'pages'), where('slug', '==', slug));
             const snapshot = await getDocs(pageQuery);
-
             if (!snapshot.empty) {
                 const pageDoc = snapshot.docs[0];
                 setPage({ id: pageDoc.id, ...pageDoc.data() } as Page);
@@ -71,7 +61,6 @@ export default function SlugPage() {
             }
             setLoadingPage(false);
         };
-
         fetchPageData();
     }, [slug, firestore]);
 
