@@ -10,12 +10,6 @@ import { useFirestore } from '@/firebase';
 import { collection, doc, query, where, getDocs, orderBy, onSnapshot, limit } from 'firebase/firestore';
 import { useParams } from 'next/navigation';
 
-export function generateStaticParams() {
-  // We return an empty array because we want all slugs to be generated on-demand on the client.
-  // This satisfies the `output: 'export'` build requirement without pre-building any pages.
-  return [];
-}
-
 function ProductGrid({ products, loadingProducts }: { products: Product[], loadingProducts: boolean }) {
      if (loadingProducts) {
         return <div className="flex justify-center p-12"><Loader2 className="h-8 w-8 animate-spin" /></div>

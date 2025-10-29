@@ -56,11 +56,6 @@ const allBlogPostsData = [
   }
 ];
 
-
-export function generateStaticParams() {
-  return [];
-}
-
 export default function BlogPostPage() {
   const params = useParams();
   const slug = params.slug as string;
