@@ -26,10 +26,6 @@ import {
 import Link from 'next/link';
 import { collection, doc, query, orderBy, where, getDocs, limit, onSnapshot } from 'firebase/firestore';
 
-export function generateStaticParams() {
-  return [];
-}
-
 export default function ProductDetailPage() {
   const params = useParams();
   const slug = params.slug as string;
